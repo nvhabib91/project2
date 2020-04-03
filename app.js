@@ -1,111 +1,204 @@
 let svgWidth = 960;
-
 let svgHeight = 500;
-
 let margin = {
   top: 20,
   right: 40,
-  bottom: 60,
+  bottom: 80,
   left: 100
 };
-
 let width = svgWidth - margin.left - margin.right;
-
 let height = svgHeight - margin.top - margin.bottom;
-
-// Create an SVG wrapper, append an SVG group that will hold our chart, and shift the latter by left and top margins.
-let svg = d3.select(".chart")
+// Create an SVG wrapper, append an SVG group that will hold our chart,
+// and shift the latter by left and top margins.
+let svg = d3
+  .select(".chart")
   .append("svg")
   .attr("width", svgWidth)
   .attr("height", svgHeight);
+// Append an SVG group
 let chartGroup = svg.append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
+// Initial Params
+let chosenXAxis = "games_played";
+// function used for updating x-scale let upon click on axis label
+function xScale(playerData, chosenXAxis) {
+  // create scales
+  let xLinearScale = d3.scaleLinear()
+    .domain([d3.min(playerData, d => d[chosenXAxis]),
+      d3.max(playerData, d => d[chosenXAxis])
+    ])
+    .range([0, width]);
+  return xLinearScale;
+}
+// function used for updating xAxis let upon click on axis label
+function renderAxes(newXScale, xAxis) {
+  let bottomAxis = d3.axisBottom(newXScale);
+  xAxis.transition()
+    .duration(1000)
+    .call(bottomAxis);
+  return xAxis;
+}
+// function used for updating circles group with a transition to
+// new circles
+function renderCircles(circlesGroup, newXScale, chosenXAxis) {
+  circlesGroup.transition()
+    .duration(1000)
+    .attr("cx", d => newXScale(d[chosenXAxis]));
+  return circlesGroup;
+}
+// function used for updating circles group with new tooltip
+function updateToolTip(chosenXAxis, circlesGroup) {
+  let label;
+  if (chosenXAxis === "games_played") {
+    label = "Games Played:";
+  }
+  else if (chosenXAxis === "age") {
+    label = "Age";
+  }
 
-// Import Data
-d3.csv("player_advanced_2018_cleaned.csv").then(function(pa2018) {
-    // Step 1: Parse Data/Cast as numbers
-    // ==============================
-    pa2018.forEach(data => {
-      data.age = +data.age;
-      data.games_played = +data.games_played;
-      data.minutes_played = +data.minutes_played;
-      data.player_efficiency_rating = +data.player_efficiency_rating;
-      data.true_shooting_percentage = +data.true_shooting_percentage;
-      data.three_point_attempt_rate = +data.three_point_attempt_rate;
-      data.free_throw_attempt_rate = +data.free_throw_attempt_rate;
-      data.offensive_rebound_percentage = +data.offensive_rebound_percentage;
-      data.defensive_rebound_percentage = +data.defensive_rebound_percentage;
-      data.total_rebound_percentage = +data.total_rebound_percentage;
-      data.assist_percentage = +data.assist_percentage;
-      data.steal_percentage = +data.steal_percentage;
-      data.block_percentage = +data.block_percentage;
-      data.turnover_percentage = +data.turnover_percentage;
-      data.usage_percentage = +data.usage_percentage;
-      data.offensive_win_shares = +data.offensive_win_shares;
-      data.defensive_win_shares = +data.defensive_win_shares;
-      data.win_shares = +data.win_shares;
-      data.win_shares_per_48_minutes = +data.win_shares_per_48_minutes;
-      data.offensive_box_plus_minus = +data.offensive_box_plus_minus;
-      data.defensive_box_plus_minus = +data.defensive_box_plus_minus;
-      data.box_plus_minus = +data.box_plus_minus;
-      data.value_over_replacement_player = +data.value_over_replacement_player;
+  else {
+    label = "Player Efficiency Rating"
+  }
+
+  let toolTip = d3.tip()
+    .attr("class", "tooltip")
+    .offset([80, -60])
+    .html(function(d) {
+      return (`Player Name: ${d.name} <br>Minutes Played: ${d.minutes_played}<br>${label} ${d[chosenXAxis]}`);
     });
-
-    // Step 2: Create scale functions
-    // ==============================
-    let xScale = d3.scaleBand()
-      .domain(pa2018.map(data => data.name))
-      .range([0, width]);
-    let yScale = d3.scaleLinear()
-      .domain([0, d3.max(pa2018, data => data.minutes_played)])
-      .range([height, 0]);
-
-    // Step 3: Create axis functions
-    // ==============================
-    let xAxis = d3.axisBottom(xScale);
-    let yAxis = d3.axisLeft(yScale);
-
-    // Step 4: Append Axes to the chart
-    // ==============================
-    chartGroup.append('g')
-      .attr('transform', `translate(0, ${height})`)
-      .call(xAxis);
-    chartGroup.append('g')
-      .call(yAxis);
-
-    // Step 5: Create Circles
-    // ==============================
-    chartGroup.selectAll('.bar')
-    .data(pa2018)
+  circlesGroup.call(toolTip);
+  circlesGroup.on("mouseover", function(data) {
+    toolTip.show(data);
+  })
+    // onmouseout event
+    .on("mouseout", function(data, index) {
+      toolTip.hide(data);
+    });
+  return circlesGroup;
+}
+// Retrieve data from the CSV file and execute everything below
+d3.csv("player_advanced_2018_cleaned.csv").then(function(playerData, err) {
+  console.log(playerData)
+  if (err) throw err;
+  // parse data
+  playerData.forEach(function(data) {
+    data.minutes_played = +data.minutes_played;
+    data.games_played = +data.games_played;
+    data.age = +data.age;
+    data.player_efficiency_rating = +data.player_efficiency_rating
+  });
+  // xLinearScale function above csv import
+  let xLinearScale = xScale(playerData, chosenXAxis);
+  // Create y scale function
+  let yLinearScale = d3.scaleLinear()
+    .domain([0, d3.max(playerData, d => d.minutes_played)])
+    .range([height, 0]);
+  // Create initial axis functions
+  let bottomAxis = d3.axisBottom(xLinearScale);
+  let leftAxis = d3.axisLeft(yLinearScale);
+  // append x axis
+  let xAxis = chartGroup.append("g")
+    .classed("x-axis", true)
+    .attr("transform", `translate(0, ${height})`)
+    .call(bottomAxis);
+  // append y axis
+  chartGroup.append("g")
+    .call(leftAxis);
+  // append initial circles
+  let circlesGroup = chartGroup.selectAll("circle")
+    .data(playerData)
     .enter()
-    .append('rect')
-    .classed('bar', true)
-    .attr('x', data => xScale(data.name))
-    .attr('y', data => yScale(data.minutes_played))
-    .attr('width', xScale.bandwidth())
-    .attr('height', data => height - yScale(data.minutes_played));
-}).catch(error => console.log(error)); 
-
-    // Step 6: Initialize tool tip
-    // ==============================
-    let toolTip = d3.tip()
-      .attr('class', 'tooltip')
-      .offset([80, -60])
-      .html(function(data){
-        return `${data.name}<br />Minutes Played: ${data.minutes_played}`;
+    .append("circle")
+    .attr("cx", d => xLinearScale(d[chosenXAxis]))
+    .attr("cy", d => yLinearScale(d.minutes_played))
+    .attr("r", 5)
+    .attr("fill", "blue")
+    .attr("opacity", ".5");
+  // Create group for  2 x- axis labels
+  let labelsGroup = chartGroup.append("g")
+    .attr("transform", `translate(${width / 2}, ${height + 20})`);
+  let gamesPlayedLabel = labelsGroup.append("text")
+    .attr("x", 0)
+    .attr("y", 20)
+    .attr("value", "games_played") // value to grab for event listener
+    .classed("active", true)
+    .text("Games Played");
+  let ageLabel = labelsGroup.append("text")
+    .attr("x", 0)
+    .attr("y", 40)
+    .attr("value", "age") // value to grab for event listener
+    .classed("inactive", true)
+    .text("Age");
+  let playerefficiencyratingLabel = labelsGroup.append("text")
+    .attr("x", 0)
+    .attr("y", 60)
+    .attr("value", "player_efficiency_rating") // value to grab for event listener
+    .classed("inactive", true)
+    .text("Player Efficiency Rating");
+  // append y axis
+  chartGroup.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 0 - margin.left)
+    .attr("x", 0 - (height / 2))
+    .attr("dy", "1em")
+    .classed("axis-text", true)
+    .text("Minutes Played");
+  // updateToolTip function above csv import
+  circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+  // x axis labels event listener
+  labelsGroup.selectAll("text")
+    .on("click", function() {
+      // get value of selection
+      let value = d3.select(this).attr("value");
+      if (value !== chosenXAxis) {
+        // replaces chosenXAxis with value
+        chosenXAxis = value;
+        console.log(chosenXAxis)
+        // functions here found above csv import
+        // updates x scale for new data
+        xLinearScale = xScale(playerData, chosenXAxis);
+        // updates x axis with transition
+        xAxis = renderAxes(xLinearScale, xAxis);
+        // updates circles with new x values
+        circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis);
+        // updates tooltips with new info
+        circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+        // changes classes to change bold text
+        if (chosenXAxis === "games_played") {
+          gamesPlayedLabel
+            .classed("active", true)
+            .classed("inactive", false);
+          ageLabel
+            .classed("active", false)
+            .classed("inactive", true);
+          playerefficiencyratingLabel
+            .classed("active", false)
+            .classed("inactive", true);
+        }
+        else if (chosenXAxis === "age"){
+          gamesPlayedLabel
+            .classed("active", false)
+            .classed("inactive", true);
+          ageLabel
+            .classed("active", true)
+            .classed("inactive", false);
+          playerefficiencyratingLabel
+            .classed("active", false)
+            .classed("inactive", true);
+        }
+        else {
+          gamesPlayedLabel
+            .classed("active", false)
+            .classed("inactive", true);
+          ageLabel
+            .classed("active", false)
+            .classed("inactive", true);
+          playerefficiencyratingLabel
+            .classed("active", true)
+            .classed("inactive", false);
+      }
+    }
       });
-
-    // Step 7: Create tooltip in the chart
-    // ==============================
-    chartGroup.call(toolTip);
-
-    // Step 8: Create event listeners to display and hide the tooltip
-    // ==============================
-    chartGroup.on('click', function(data){
-      toolTip.show(data, this);
-    })
-      .on('mouseout', function(data){
-        toolTip.hide(data);
-      });
-    // Create axes labels
-
+}).catch(function(error) {
+  console.log(error);
+});
