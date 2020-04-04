@@ -6,6 +6,7 @@ let margin = {
   bottom: 80,
   left: 100
 };
+
 let width = svgWidth - margin.left - margin.right;
 let height = svgHeight - margin.top - margin.bottom;
 // Create an SVG wrapper, append an SVG group that will hold our chart,
@@ -19,7 +20,7 @@ let svg = d3
 let chartGroup = svg.append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 // Initial Params
-let chosenXAxis = "games_played";
+let chosenXAxis = "G";
 // function used for updating x-scale let upon click on axis label
 function xScale(playerData, chosenXAxis) {
   // create scales
@@ -49,10 +50,10 @@ function renderCircles(circlesGroup, newXScale, chosenXAxis) {
 // function used for updating circles group with new tooltip
 function updateToolTip(chosenXAxis, circlesGroup) {
   let label;
-  if (chosenXAxis === "games_played") {
+  if (chosenXAxis === "G") {
     label = "Games Played:";
   }
-  else if (chosenXAxis === "age") {
+  else if (chosenXAxis === "Age") {
     label = "Age";
   }
 
@@ -64,7 +65,7 @@ function updateToolTip(chosenXAxis, circlesGroup) {
     .attr("class", "tooltip")
     .offset([80, -60])
     .html(function(d) {
-      return (`Player Name: ${d.name} <br>Minutes Played: ${d.minutes_played}<br>${label} ${d[chosenXAxis]}`);
+      return (`Player Name: ${d.Player} <br>Minutes Played: ${d.MP}<br>${label} ${d[chosenXAxis]}`);
     });
   circlesGroup.call(toolTip);
   circlesGroup.on("mouseover", function(data) {
@@ -77,21 +78,156 @@ function updateToolTip(chosenXAxis, circlesGroup) {
   return circlesGroup;
 }
 // Retrieve data from the CSV file and execute everything below
-d3.csv("player_advanced_2018_cleaned.csv").then(function(playerData, err) {
+function getData() {
+  if(document.getElementById('season').value =="2016-17") {
+    
+    d3.csv("advanced_stats_2016-17.csv").then(function(playerData, err) {
+    console.log(playerData)
+    if (err) throw err;
+    // parse data
+    playerData.forEach(function(data) {
+      data.MP = +data.MP;
+      data.G = +data.G;
+      data.Age = +data.Age;
+      data.PER = +data.PER
+    });
+    // xLinearScale function above csv import
+    let xLinearScale = xScale(playerData, chosenXAxis);
+    // Create y scale function
+    let yLinearScale = d3.scaleLinear()
+      .domain([0, d3.max(playerData, d => d.MP)])
+      .range([height, 0]);
+    // Create initial axis functions
+    let bottomAxis = d3.axisBottom(xLinearScale);
+    let leftAxis = d3.axisLeft(yLinearScale);
+    // append x axis
+    let xAxis = chartGroup.append("g")
+      .classed("x-axis", true)
+      .attr("transform", `translate(0, ${height})`)
+      .call(bottomAxis);
+    // append y axis
+    chartGroup.append("g")
+      .call(leftAxis);
+    // append initial circles
+    let circlesGroup = chartGroup.selectAll("circle")
+      .data(playerData)
+      .enter()
+      .append("circle")
+      .attr("cx", d => xLinearScale(d[chosenXAxis]))
+      .attr("cy", d => yLinearScale(d.MP))
+      .attr("r", 5)
+      .attr("fill", "blue")
+      .attr("opacity", ".5");
+    // Create group for  2 x- axis labels
+    let labelsGroup = chartGroup.append("g")
+      .attr("transform", `translate(${width / 2}, ${height + 20})`);
+    let gpLabel = labelsGroup.append("text")
+      .attr("x", 0)
+      .attr("y", 20)
+      .attr("value", "G") // value to grab for event listener
+      .classed("active", true)
+      .text("Games Played");
+    let ageLabel = labelsGroup.append("text")
+      .attr("x", 0)
+      .attr("y", 40)
+      .attr("value", "Age") // value to grab for event listener
+      .classed("inactive", true)
+      .text("Age");
+    let perLabel = labelsGroup.append("text")
+      .attr("x", 0)
+      .attr("y", 60)
+      .attr("value", "PER") // value to grab for event listener
+      .classed("inactive", true)
+      .text("Player Efficiency Rating");
+    // append y axis
+    chartGroup.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x", 0 - (height / 2))
+      .attr("dy", "1em")
+      .classed("axis-text", true)
+      .text("Minutes Played");
+    // updateToolTip function above csv import
+    circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+    // x axis labels event listener
+    labelsGroup.selectAll("text")
+      .on("click", function() {
+        // get value of selection
+        let value = d3.select(this).attr("value");
+        if (value !== chosenXAxis) {
+          // replaces chosenXAxis with value
+          chosenXAxis = value;
+          console.log(chosenXAxis)
+          // functions here found above csv import
+          // updates x scale for new data
+          xLinearScale = xScale(playerData, chosenXAxis);
+          // updates x axis with transition
+          xAxis = renderAxes(xLinearScale, xAxis);
+          // updates circles with new x values
+          circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis);
+          // updates tooltips with new info
+          circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+          // changes classes to change bold text
+          if (chosenXAxis === "G") {
+            gpLabel
+              .classed("active", true)
+              .classed("inactive", false);
+            ageLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            perLabel
+              .classed("active", false)
+              .classed("inactive", true);
+          }
+          else if (chosenXAxis === "Age"){
+            gpLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            ageLabel
+              .classed("active", true)
+              .classed("inactive", false);
+            perLabel
+              .classed("active", false)
+              .classed("inactive", true);
+          }
+          else {
+            gpLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            ageLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            perLabel
+              .classed("active", true)
+              .classed("inactive", false);
+        }
+      }
+  
+        });
+        
+  }).catch(function(error) {
+    console.log(error);
+  });
+}
+else if(document.getElementById('season').value =="2017-18") {
+    
+  d3.csv("advanced_stats_2017-18.csv").then(function(playerData, err) {
   console.log(playerData)
   if (err) throw err;
   // parse data
+  chartGroup.html("")
+
   playerData.forEach(function(data) {
-    data.minutes_played = +data.minutes_played;
-    data.games_played = +data.games_played;
-    data.age = +data.age;
-    data.player_efficiency_rating = +data.player_efficiency_rating
+    data.MP = +data.MP;
+    data.G = +data.G;
+    data.Age = +data.Age;
+    data.PER = +data.PER
   });
   // xLinearScale function above csv import
   let xLinearScale = xScale(playerData, chosenXAxis);
   // Create y scale function
   let yLinearScale = d3.scaleLinear()
-    .domain([0, d3.max(playerData, d => d.minutes_played)])
+    .domain([0, d3.max(playerData, d => d.MP)])
     .range([height, 0]);
   // Create initial axis functions
   let bottomAxis = d3.axisBottom(xLinearScale);
@@ -110,29 +246,29 @@ d3.csv("player_advanced_2018_cleaned.csv").then(function(playerData, err) {
     .enter()
     .append("circle")
     .attr("cx", d => xLinearScale(d[chosenXAxis]))
-    .attr("cy", d => yLinearScale(d.minutes_played))
+    .attr("cy", d => yLinearScale(d.MP))
     .attr("r", 5)
     .attr("fill", "blue")
     .attr("opacity", ".5");
   // Create group for  2 x- axis labels
   let labelsGroup = chartGroup.append("g")
     .attr("transform", `translate(${width / 2}, ${height + 20})`);
-  let gamesPlayedLabel = labelsGroup.append("text")
+  let gpLabel = labelsGroup.append("text")
     .attr("x", 0)
     .attr("y", 20)
-    .attr("value", "games_played") // value to grab for event listener
+    .attr("value", "G") // value to grab for event listener
     .classed("active", true)
     .text("Games Played");
   let ageLabel = labelsGroup.append("text")
     .attr("x", 0)
     .attr("y", 40)
-    .attr("value", "age") // value to grab for event listener
+    .attr("value", "Age") // value to grab for event listener
     .classed("inactive", true)
     .text("Age");
-  let playerefficiencyratingLabel = labelsGroup.append("text")
+  let perLabel = labelsGroup.append("text")
     .attr("x", 0)
     .attr("y", 60)
-    .attr("value", "player_efficiency_rating") // value to grab for event listener
+    .attr("value", "PER") // value to grab for event listener
     .classed("inactive", true)
     .text("Player Efficiency Rating");
   // append y axis
@@ -164,41 +300,181 @@ d3.csv("player_advanced_2018_cleaned.csv").then(function(playerData, err) {
         // updates tooltips with new info
         circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
         // changes classes to change bold text
-        if (chosenXAxis === "games_played") {
-          gamesPlayedLabel
+        if (chosenXAxis === "G") {
+          gpLabel
             .classed("active", true)
             .classed("inactive", false);
           ageLabel
             .classed("active", false)
             .classed("inactive", true);
-          playerefficiencyratingLabel
+          perLabel
             .classed("active", false)
             .classed("inactive", true);
         }
-        else if (chosenXAxis === "age"){
-          gamesPlayedLabel
+        else if (chosenXAxis === "Age"){
+          gpLabel
             .classed("active", false)
             .classed("inactive", true);
           ageLabel
             .classed("active", true)
             .classed("inactive", false);
-          playerefficiencyratingLabel
+          perLabel
             .classed("active", false)
             .classed("inactive", true);
         }
         else {
-          gamesPlayedLabel
+          gpLabel
             .classed("active", false)
             .classed("inactive", true);
           ageLabel
             .classed("active", false)
             .classed("inactive", true);
-          playerefficiencyratingLabel
+          perLabel
             .classed("active", true)
             .classed("inactive", false);
+      
       }
     }
       });
+      
 }).catch(function(error) {
   console.log(error);
 });
+}
+else {
+    
+  d3.csv("advanced_stats_2018-19.csv").then(function(playerData, err) {
+  console.log(playerData)
+  if (err) throw err;
+  // parse data
+  chartGroup.html("")
+
+  playerData.forEach(function(data) {
+    data.MP = +data.MP;
+    data.G = +data.G;
+    data.Age = +data.Age;
+    data.PER = +data.PER
+  });
+  // xLinearScale function above csv import
+  let xLinearScale = xScale(playerData, chosenXAxis);
+  // Create y scale function
+  let yLinearScale = d3.scaleLinear()
+    .domain([0, d3.max(playerData, d => d.MP)])
+    .range([height, 0]);
+  // Create initial axis functions
+  let bottomAxis = d3.axisBottom(xLinearScale);
+  let leftAxis = d3.axisLeft(yLinearScale);
+  // append x axis
+  let xAxis = chartGroup.append("g")
+    .classed("x-axis", true)
+    .attr("transform", `translate(0, ${height})`)
+    .call(bottomAxis);
+  // append y axis
+  chartGroup.append("g")
+    .call(leftAxis);
+  // append initial circles
+  let circlesGroup = chartGroup.selectAll("circle")
+    .data(playerData)
+    .enter()
+    .append("circle")
+    .attr("cx", d => xLinearScale(d[chosenXAxis]))
+    .attr("cy", d => yLinearScale(d.MP))
+    .attr("r", 5)
+    .attr("fill", "blue")
+    .attr("opacity", ".5");
+  // Create group for  2 x- axis labels
+  let labelsGroup = chartGroup.append("g")
+    .attr("transform", `translate(${width / 2}, ${height + 20})`);
+  let gpLabel = labelsGroup.append("text")
+    .attr("x", 0)
+    .attr("y", 20)
+    .attr("value", "G") // value to grab for event listener
+    .classed("active", true)
+    .text("Games Played");
+  let ageLabel = labelsGroup.append("text")
+    .attr("x", 0)
+    .attr("y", 40)
+    .attr("value", "Age") // value to grab for event listener
+    .classed("inactive", true)
+    .text("Age");
+  let perLabel = labelsGroup.append("text")
+    .attr("x", 0)
+    .attr("y", 60)
+    .attr("value", "PER") // value to grab for event listener
+    .classed("inactive", true)
+    .text("Player Efficiency Rating");
+  // append y axis
+  chartGroup.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 0 - margin.left)
+    .attr("x", 0 - (height / 2))
+    .attr("dy", "1em")
+    .classed("axis-text", true)
+    .text("Minutes Played");
+  // updateToolTip function above csv import
+  circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+  // x axis labels event listener
+  labelsGroup.selectAll("text")
+    .on("click", function() {
+      // get value of selection
+      let value = d3.select(this).attr("value");
+      if (value !== chosenXAxis) {
+        // replaces chosenXAxis with value
+        chosenXAxis = value;
+        console.log(chosenXAxis)
+        // functions here found above csv import
+        // updates x scale for new data
+        xLinearScale = xScale(playerData, chosenXAxis);
+        // updates x axis with transition
+        xAxis = renderAxes(xLinearScale, xAxis);
+        // updates circles with new x values
+        circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis);
+        // updates tooltips with new info
+        circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+        // changes classes to change bold text
+        if (chosenXAxis === "G") {
+          gpLabel
+            .classed("active", true)
+            .classed("inactive", false);
+          ageLabel
+            .classed("active", false)
+            .classed("inactive", true);
+          perLabel
+            .classed("active", false)
+            .classed("inactive", true);
+        }
+        else if (chosenXAxis === "Age"){
+          gpLabel
+            .classed("active", false)
+            .classed("inactive", true);
+          ageLabel
+            .classed("active", true)
+            .classed("inactive", false);
+          perLabel
+            .classed("active", false)
+            .classed("inactive", true);
+        }
+        else {
+          gpLabel
+            .classed("active", false)
+            .classed("inactive", true);
+          ageLabel
+            .classed("active", false)
+            .classed("inactive", true);
+          perLabel
+            .classed("active", true)
+            .classed("inactive", false);
+      
+      }
+    }
+      });
+      
+}).catch(function(error) {
+  console.log(error);
+});
+}
+};
+function dropdownOption(season) {
+  getData(season)
+  }
+getData();

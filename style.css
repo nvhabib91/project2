@@ -1,21 +1,24 @@
-#hairmetal {
+#players {
   border-radius: 8px;
 }
 
 .chart::before {
   position: absolute;
-  top: 50px;
-  left: 300px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  top: center;
+  left: center;
   z-index: -1;
   display: block;
-  width: 400px;
-  height: 300px;
+  width: 800px;
+  height: 700px;
   content: " ";
-  background-image: url("maxresdefault.jpg");
+  background-image: url(court.jpg);
   background-repeat: no-repeat;
-  background-position: 50% 0;
-  background-size: cover;
-  opacity: 0.3;
+  background-position: 5px 5px;
+  background-size: contain;
+  opacity: .8;
 }
 
 .tooltip {
@@ -25,31 +28,31 @@
   padding: 2px;
   padding-top: 8px;
   font: 12px sans-serif;
-  color: white;
+  color: orange;
   text-align: center;
-  background: #551aaf;
+  background: lightslategray;
   border: 0;
   border-radius: 10px;
 }
 
 .axis-text {
-  font-family: sans-serif;
+  font-family: Calibri;
   font-weight: bold;
-  fill: #551aaf;
+  fill: black;
   text-anchor: middle;
 }
 
 .active {
   font-weight: bold;
   fill: #000;
-  fill: #551aaf;
+  fill: orangered;
   transition: fill 0.3s ease-out;
   text-anchor: middle;
 }
 
 .inactive {
   font-weight: lighter;
-  fill: #551aaf;
+  fill: black;
   transition: fill 0.3s ease-out;
   text-anchor: middle;
 }
