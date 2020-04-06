@@ -2,7 +2,7 @@
   border-radius: 8px;
 }
 
-.chart::before {
+#chart::before {
   position: absolute;
   align-items: center;
   justify-content: center;
