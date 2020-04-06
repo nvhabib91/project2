@@ -18,13 +18,14 @@
 		<h1>Player Stats by Season</h1>
 
 		<div id="myChart">
-			<select id="season" onchange="dropdownOption(this.value)">
+			<select id="season" onchange="getData(this.value)">
+			<!-- <select id="season"> -->
 				<option value="2016-17">2016-17</option>
 				<option value="2017-18">2017-18</option>
 				<option value="2018-19">2018-19</option>
 			</select>
 		</div>
-		<div class="chart" style="align-self: center;"></div>
+		<div id="chart" style="align-self: center;"></div>
 		<script src="https://d3js.org/d3.v5.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
 		<script type="text/javascript" src="app.js"></script>
