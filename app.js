@@ -81,7 +81,7 @@
 
 
 function getData(file_name="2016-17") {
-  file_name = "advanced_stats_" + file_name + ".csv";
+  file_name = "/Output_csvs/advanced_stats_" + file_name + ".csv";
   d3.select("#chart").html("");
 
 let svgWidth = 960;
