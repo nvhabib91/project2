@@ -84,12 +84,12 @@ function getData(file_name="2016-17") {
   file_name = "/data/advanced_stats_" + file_name + ".csv";
   d3.select("#chart").html("");
 
-let svgWidth = 960;
-let svgHeight = 500;
+let svgWidth = 1000;
+let svgHeight = 700;
 let margin = {
-  top: 20,
-  right: 40,
-  bottom: 80,
+  top: 50,
+  right: 10,
+  bottom: 250,
   left: 100
 };
 
@@ -106,7 +106,7 @@ let svg = d3
 let chartGroup = svg.append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 // Initial Params
-let chosenXAxis = "G";
+let chosenXAxis = "Age";
 // function used for updating x-scale let upon click on axis label
 function xScale(playerData, chosenXAxis) {
   // create scales
@@ -136,14 +136,26 @@ function renderCircles(circlesGroup, newXScale, chosenXAxis) {
 // function used for updating circles group with new tooltip
 function updateToolTip(chosenXAxis, circlesGroup) {
   let label;
-  if (chosenXAxis === "G") {
+  if (chosenXAxis === "Age") {
+    label = "Age:";
+  }
+  else if (chosenXAxis === "G") {
     label = "Games Played:";
   }
-  else if (chosenXAxis === "Age") {
-    label = "Age";
+
+  else if (chosenXAxis === "BLK%") {
+    label = "Block Percentage:";
   }
 
-  else {
+  else if (chosenXAxis === "STL%") {
+    label = "Steal Percentage:";
+  }
+
+  else if (chosenXAxis === "AST%") {
+    label = "Assist Percentage:";
+  }
+
+  else if (chosenXAxis === "PER"){
     label = "Player Efficiency Rating"
   }
 
@@ -151,7 +163,7 @@ function updateToolTip(chosenXAxis, circlesGroup) {
     .attr("class", "tooltip")
     .offset([80, -60])
     .html(function(d) {
-      return (`Player Name: ${d.Player} <br>Minutes Played: ${d.MP}<br>${label} ${d[chosenXAxis]}`);
+      return (`Player Name: ${d.Player} <br>Team: ${d.Tm} <br>Minutes Played: ${d.MP}<br>${label} ${d[chosenXAxis]}`);
     });
   circlesGroup.call(toolTip);
   circlesGroup.on("mouseover", function(data) {
@@ -176,6 +188,9 @@ function updateToolTip(chosenXAxis, circlesGroup) {
       data.G = +data.G;
       data.Age = +data.Age;
       data.PER = +data.PER
+      data["BLK%"] = +data["BLK%"]
+      data["STL%"] = +data["STL%"]
+      data["AST%"] = +data["AST%"]
     });
     // xLinearScale function above csv import
     let xLinearScale = xScale(playerData, chosenXAxis);
@@ -206,22 +221,40 @@ function updateToolTip(chosenXAxis, circlesGroup) {
       .attr("opacity", ".5");
     // Create group for  2 x- axis labels
     let labelsGroup = chartGroup.append("g")
-      .attr("transform", `translate(${width / 2}, ${height + 20})`);
-    let gpLabel = labelsGroup.append("text")
-      .attr("x", 0)
-      .attr("y", 20)
-      .attr("value", "G") // value to grab for event listener
-      .classed("active", true)
-      .text("Games Played");
+      .attr("transform", `translate(${width / 2}, ${height + 30})`);
     let ageLabel = labelsGroup.append("text")
       .attr("x", 0)
-      .attr("y", 40)
+      .attr("y", 10)
       .attr("value", "Age") // value to grab for event listener
-      .classed("inactive", true)
+      .classed("active", true)
       .text("Age");
-    let perLabel = labelsGroup.append("text")
+    let gpLabel = labelsGroup.append("text")
+      .attr("x", 0)
+      .attr("y", 35)
+      .attr("value", "G") // value to grab for event listener
+      .classed("inactive", true)
+      .text("Games Played");
+    let stlLabel = labelsGroup.append("text")
       .attr("x", 0)
       .attr("y", 60)
+      .attr("value", "STL%") // value to grab for event listener
+      .classed("inactive", true)
+      .text("Steal Percentage");
+    let astLabel = labelsGroup.append("text")
+      .attr("x", 0)
+      .attr("y", 85)
+      .attr("value", "AST%") // value to grab for event listener
+      .classed("inactive", true)
+      .text("Assist Percentage");
+    let blkLabel = labelsGroup.append("text")
+      .attr("x", 0)
+      .attr("y", 110)
+      .attr("value", "BLK%") // value to grab for event listener
+      .classed("inactive", true)
+      .text("Block Percentage");
+    let perLabel = labelsGroup.append("text")
+      .attr("x", 0)
+      .attr("y", 135)
       .attr("value", "PER") // value to grab for event listener
       .classed("inactive", true)
       .text("Player Efficiency Rating");
@@ -254,22 +287,100 @@ function updateToolTip(chosenXAxis, circlesGroup) {
           // updates tooltips with new info
           circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
           // changes classes to change bold text
-          if (chosenXAxis === "G") {
-            gpLabel
+          if (chosenXAxis === "PER") {
+            ageLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            gLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            blkLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            stlLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            astLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            perLabel
               .classed("active", true)
               .classed("inactive", false);
+          }
+          else if (chosenXAxis === "G") {
             ageLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            gLabel
+              .classed("active", true)
+              .classed("inactive", false);
+            blkLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            stlLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            astLabel
               .classed("active", false)
               .classed("inactive", true);
             perLabel
               .classed("active", false)
               .classed("inactive", true);
           }
-          else if (chosenXAxis === "Age"){
-            gpLabel
+          else if (chosenXAxis === "BLK%") {
+            ageLabel
               .classed("active", false)
               .classed("inactive", true);
+            gLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            blkLabel
+              .classed("active", true)
+              .classed("inactive", false);
+            stlLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            astLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            perLabel
+              .classed("active", false)
+              .classed("inactive", true);
+          }
+          else if (chosenXAxis === "STL%") {
             ageLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            gLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            blkLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            stlLabel
+              .classed("active", true)
+              .classed("inactive", false);
+            astLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            perLabel
+              .classed("active", false)
+              .classed("inactive", true);
+          }
+          else if (chosenXAxis === "AST%") {
+            ageLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            gLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            blkLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            stlLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            astLabel
               .classed("active", true)
               .classed("inactive", false);
             perLabel
@@ -277,16 +388,25 @@ function updateToolTip(chosenXAxis, circlesGroup) {
               .classed("inactive", true);
           }
           else {
-            gpLabel
+            ageLabel
+              .classed("active", true)
+              .classed("inactive", false);
+            gLabel
               .classed("active", false)
               .classed("inactive", true);
-            ageLabel
+            blkLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            stlLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            astLabel
               .classed("active", false)
               .classed("inactive", true);
             perLabel
-              .classed("active", true)
-              .classed("inactive", false);
-        }
+              .classed("active", false)
+              .classed("inactive", true);
+          }
       }
   
         });

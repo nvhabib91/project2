@@ -1,0 +1,115 @@
+
+.tooltip {
+  position: absolute;
+  width: 200px;
+  height: 100;
+  padding: 2px;
+  padding-top: 8px;
+  font: 12px sans-serif;
+  color: orange;
+  text-align: center;
+  background: black;
+  border: 0;
+  border-radius: 10px;
+}
+
+.axis-text {
+  font-family: sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+  fill: black;
+  text-anchor: middle;
+}
+
+.inactive {
+  font-weight: lighter;
+  fill: black;
+  font-size: 24px;
+  transition: fill 0.3s ease-out;
+  text-anchor: middle;
+}
+.active {
+  font-weight: bold;
+  fill: red;
+  font-size: 24px;
+  transition: fill 0.3s ease-out;
+  text-anchor: middle;
+}
+
+
+.inactive:hover {
+  fill: rgb(194, 19, 194);
+  cursor: pointer;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+  }
+  li {
+  float: left;
+  right: 100px;
+  }
+  li a, .dropbtn {
+  display: inline-block;
+  color: white;
+  text-align: left;
+  padding: 14px 16px;
+  text-decoration: none;
+  }
+  li a:hover, .dropdown:hover .dropbtn {
+  background-color: red;
+  }
+  li.dropdown {
+  display: inline-block;
+  }
+  .dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #F9F9F9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  }
+  .dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+  }
+  .dropdown-content a:hover {background-color: #F1F1F1;}
+  .dropdown:hover .dropdown-content {
+  display: block;
+  }
+  .iframeContainer {
+  padding: 20px;
+  border: 1px solid #E3E3E3;
+  }
+  /* Sticky Footer rules (https://getbootstrap.com/examples/sticky-footer/) */
+  html {
+  position: relative;
+  min-height: 100%;
+  }
+  body {
+  /* Padding bottom by footer height */
+  padding-bottom: 80px;
+  }
+  #footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%; /* Set the fixed height of the footer here */
+  height: 10px;
+  padding-top: 20px;
+  padding-bottom: 40px;
+  text-align: center;
+  background-color: #F5F5F5;
+  }
+  #footer p {
+  margin: 0;
+  font-size: 16px;
+  }
+  
