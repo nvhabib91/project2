@@ -2,7 +2,7 @@ function dropdown() {
   if (document.getElementById("dropdown").value == "2016-2017") {
     $('#data-table').dataTable().fnDestroy();
     $('#data-table tbody').empty();
-    d3.csv("datasets/2016-17.csv").then(function(playerData) {
+    d3.csv("data/2016-17.csv").then(function(playerData) {
       console.log(playerData);
       columnGenerate(playerData);
     })
@@ -10,7 +10,7 @@ function dropdown() {
   } else if (document.getElementById("dropdown").value == "2017-2018") {
     $('#data-table').dataTable().fnDestroy(); // used this one to destroy the table
     $('#data-table tbody').empty();
-    d3.csv("datasets/2017-18.csv").then(function(playerData) {
+    d3.csv("data/2017-18.csv").then(function(playerData) {
       console.log(playerData);
       columnGenerate(playerData);
     })
@@ -19,7 +19,7 @@ function dropdown() {
     if (document.getElementById("dropdown").value == "2018-2019") {
       $('#data-table').dataTable().fnDestroy();
       $('#data-table tbody').empty();
-      d3.csv("datasets/2018-19.csv").then(function(playerData) {
+      d3.csv("data/2018-19.csv").then(function(playerData) {
         console.log(playerData);
         columnGenerate(playerData);
       })
