@@ -1,0 +1,44 @@
+.navbar-dark {
+  background-color:#353535 !important;
+  border:none;
+  color: #FFFFFF;
+}
+
+.navbar-header{
+    height:80px;
+    color: #FFFFFF;
+}
+
+.navbar-header .navbar-toggle .collapsed {
+  float: right;
+  line-height: 80px;
+  color: #FFFFFF;
+}
+    
+.navbar-brand {
+    height: 50px;
+    line-height: 80px;
+  }
+
+.navbar-nav > li {
+    font-size: 18px;
+    padding-top: 15px;
+    padding-right: 15px;
+}
+.dropdown-menu {
+    font-size: 15px;
+    color: #FFFFFF;
+}
+.dropdown-toggle {
+  color: #FFFFFF;
+}
+
+/* .custom-toggler.navbar-toggler { 
+  border-color: #FFFFFF; 
+}  */
+
+    
+    
+
+    
+    

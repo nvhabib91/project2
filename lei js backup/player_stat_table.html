@@ -1,22 +1,77 @@
-<?php Header("Cache-Control: max-age=3000, must-revalidate"); ?>
+<!-- <?php Header("Cache-Control: max-age=3000, must-revalidate"); ?> -->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
-  <title>Player Table Information2</title>
+  <title>Player Table Information</title>
 
-<link rel="stylesheet" href="https:////cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
-  <!-- <link rel="stylesheet" href="css/edited.css""> -->
+<script
+  src="https://code.jquery.com/jquery-3.4.1.js"
+  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+  crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+<!-- bootstrap css -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="css/try.css"> <!--This is my css-->
+
+
+<!-- datatables css -->
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="https:////cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
 
 </head>
 
 <body>
+  <!-- nav-bar --> <!-- div container fluid turned off puts the table in the middle-->
+  
+
+  <nav class="navbar navbar-dark">
+      <div class = "navbar-header">
+        <!-- <div class = "container"> -->
+        <a class="navbar-brand" href="#">
+          <img src="https://www.stickpng.com/assets/images/58428defa6515b1e0ad75ab4.png" alt="Logo" style="height:45px"></a>
+
+          
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#myNavbar">
+                <span class="sr-only">Toggle Navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                  </button>
+            </div>
+
+
+
+
+            <div class="collapse navbar-collapse" id="myNavbar">
+                  <ul class="nav navbar-nav navbar-right">
+                      <li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" style="height:50px"> EXTRA
+                        <span class="caret"></span>
+                      </a>
+                      <ul class="dropdown-menu">
+                        <li><a href="player_stat_table.html">PLAYER INFORMATION</a></li>
+                         <li><a href="advanced_chart_metrics.html">ADVANCED METRICS</a></li>
+                          </li>
+              </ul>
+                  </li>
+                  <li><a class = "navbar-dark" href="index.html">HOME</a></li>
+              </ul>
+          </div>
+      </div>
+      </nav>
+
+
+
+      
+      <!-- content -->
   <!-- <div class="container-fluid">
   <div class="container"> -->
   <div class='col-lg-12'>
-  <table id="data-table" class="responsive display">
+  <table id="data-table" class="responsive display nowrap">
   <thead>
     <tr>
       <th>PLAYER</th>
@@ -47,7 +102,7 @@
       <th>BLK</th>
       <th>TOV</th>
       <th>PF</th>
-      <th>PTS</th>
+      <th>PPG</th>
 
 
  
@@ -78,14 +133,13 @@
 
 
   <!-- Footer-->
-  <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+  <!-- datatable js -->
   <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
   <script src="https://d3js.org/d3.v5.min.js"></script>
   <script src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>
   <script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.colVis.min.js"></script>
 
+  <!-- my js -->
   <script src="js/table.js"></script>
 
 </body>
