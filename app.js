@@ -291,7 +291,7 @@ function updateToolTip(chosenXAxis, circlesGroup) {
             ageLabel
               .classed("active", false)
               .classed("inactive", true);
-            gLabel
+            gpLabel
               .classed("active", false)
               .classed("inactive", true);
             blkLabel
@@ -311,7 +311,7 @@ function updateToolTip(chosenXAxis, circlesGroup) {
             ageLabel
               .classed("active", false)
               .classed("inactive", true);
-            gLabel
+            gpLabel
               .classed("active", true)
               .classed("inactive", false);
             blkLabel
@@ -331,7 +331,7 @@ function updateToolTip(chosenXAxis, circlesGroup) {
             ageLabel
               .classed("active", false)
               .classed("inactive", true);
-            gLabel
+            gpLabel
               .classed("active", false)
               .classed("inactive", true);
             blkLabel
@@ -351,7 +351,7 @@ function updateToolTip(chosenXAxis, circlesGroup) {
             ageLabel
               .classed("active", false)
               .classed("inactive", true);
-            gLabel
+            gpLabel
               .classed("active", false)
               .classed("inactive", true);
             blkLabel
@@ -371,7 +371,7 @@ function updateToolTip(chosenXAxis, circlesGroup) {
             ageLabel
               .classed("active", false)
               .classed("inactive", true);
-            gLabel
+            gpLabel
               .classed("active", false)
               .classed("inactive", true);
             blkLabel
@@ -387,11 +387,11 @@ function updateToolTip(chosenXAxis, circlesGroup) {
               .classed("active", false)
               .classed("inactive", true);
           }
-          else {
+          else if (chosenXAxis === "Age"){
             ageLabel
               .classed("active", true)
               .classed("inactive", false);
-            gLabel
+            gpLabel
               .classed("active", false)
               .classed("inactive", true);
             blkLabel
