@@ -37,8 +37,6 @@
   border-color: #FFFFFF; 
 }  */
 
-    
-    
 .tooltip {
   position: absolute;
   width: 200px;
@@ -80,6 +78,14 @@
 .inactive:hover {
   fill: rgb(194, 19, 194);
   cursor: pointer;
+}
+    
+#season {
+  font-weight: bold;
+  fill: black;
+  font-size: 24px;
+  transition: fill 0.3s ease-out;
+  text-anchor: middle;
 }
     
     
